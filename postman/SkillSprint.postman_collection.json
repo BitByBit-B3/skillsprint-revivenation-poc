@@ -1,0 +1,342 @@
+{
+  "info": {
+    "name": "SkillSprint API Collection",
+    "description": "Complete API collection for testing SkillSprint backend endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/health",
+          "host": ["{{BASE_URL}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API server is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login with Phone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('TXN_ID', response.txnId);",
+                  "    pm.test('OTP sent successfully', function () {",
+                  "        pm.expect(response.channel).to.eql('otp');",
+                  "        pm.expect(response.message).to.include('OTP sent');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+94771234567\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Initiate OTP login with phone number"
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('SESSION_ID', response.sessionId);",
+                  "    pm.test('OTP verification successful', function () {",
+                  "        pm.expect(response.claims).to.have.property('sub');",
+                  "        pm.expect(response.claims).to.have.property('name');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"txnId\": \"{{TXN_ID}}\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/verify",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "verify"]
+            },
+            "description": "Verify OTP and get session token"
+          }
+        },
+        {
+          "name": "Get User Claims",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-session-id",
+                "value": "{{SESSION_ID}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/claims",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "claims"]
+            },
+            "description": "Retrieve current user claims"
+          }
+        }
+      ]
+    },
+    {
+      "name": "National Data Exchange",
+      "item": [
+        {
+          "name": "Fetch Education Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"did:national:abc123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/nde/education",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "nde", "education"]
+            },
+            "description": "Fetch education record from National Data Exchange"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gigs",
+      "item": [
+        {
+          "name": "List Available Gigs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/gigs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "gigs"]
+            },
+            "description": "Get list of available gigs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Initiate Payout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('PAYOUT_ID', response.payoutId);",
+                  "    pm.test('Payout initiated successfully', function () {",
+                  "        pm.expect(response.status).to.eql('initiated');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gigId\": \"g2\",\n  \"amountLKR\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/paydpi",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "paydpi"]
+            },
+            "description": "Initiate payout for accepted gig"
+          }
+        },
+        {
+          "name": "Get Payout Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/paydpi/status?payoutId={{PAYOUT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "paydpi", "status"],
+              "query": [
+                {
+                  "key": "payoutId",
+                  "value": "{{PAYOUT_ID}}"
+                }
+              ]
+            },
+            "description": "Check status of payout transaction"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Test Payment Webhook",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate HMAC signature for webhook",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "const payload = JSON.stringify({",
+                  "    \"payoutId\": \"pay_test\",",
+                  "    \"status\": \"settled\",",
+                  "    \"amountLKR\": 5000,",
+                  "    \"gigId\": \"g2\"",
+                  "});",
+                  "",
+                  "const secret = pm.environment.get('PAYDPI_SECRET');",
+                  "const signature = CryptoJS.HmacSHA256(payload, secret).toString();",
+                  "",
+                  "pm.environment.set('WEBHOOK_SIGNATURE', signature);",
+                  "pm.environment.set('WEBHOOK_PAYLOAD', payload);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-paydpi-signature",
+                "value": "{{WEBHOOK_SIGNATURE}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{WEBHOOK_PAYLOAD}}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/v1/payouts/webhook",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "payouts", "webhook"]
+            },
+            "description": "Test webhook endpoint with valid HMAC signature"
+          }
+        },
+        {
+          "name": "Test Invalid Webhook Signature",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-paydpi-signature",
+                "value": "invalid_signature"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payoutId\": \"pay_test\",\n  \"status\": \"settled\",\n  \"amountLKR\": 5000,\n  \"gigId\": \"g2\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/v1/payouts/webhook",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "payouts", "webhook"]
+            },
+            "description": "Test webhook with invalid signature (should return 401)"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "console.log('Making request to:', pm.request.url.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Response has correct Content-Type', function () {",
+          "    if (pm.response.code !== 204) {",
+          "        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "    }",
+          "});"
+        ]
+      }
+    }
+  ]
+}

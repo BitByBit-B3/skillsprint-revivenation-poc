@@ -1,0 +1,198 @@
+openapi: 3.0.3
+info:
+  title: SkillSprint API
+  description: |
+    SkillSprint downstream API for gig listing and payment webhooks.
+    This API serves as the integration point for the SkillSprint platform,
+    providing access to available gigs and handling payment notifications.
+  version: 1.0.0
+  contact:
+    name: SkillSprint Support
+    email: support@skillsprint.lk
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3001
+    description: Local development server
+  - url: https://api.skillsprint.lk
+    description: Production server
+
+paths:
+  /v1/gigs:
+    get:
+      summary: List available gigs
+      description: Retrieve a list of all available micro-gigs with their requirements and payouts
+      operationId: listGigs
+      tags:
+        - Gigs
+      responses:
+        '200':
+          description: Successfully retrieved gigs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gigs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Gig'
+              example:
+                gigs:
+                  - id: "g1"
+                    title: "Figma landing revamp"
+                    payoutLKR: 3000
+                    skills: ["Figma"]
+                  - id: "g2"
+                    title: "React component library"
+                    payoutLKR: 5000
+                    skills: ["React"]
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/payouts/webhook:
+    post:
+      summary: Payment status webhook
+      description: |
+        Webhook endpoint for receiving payment status updates from the National Payments Gateway.
+        All requests must include a valid HMAC-SHA256 signature in the x-paydpi-signature header.
+      operationId: paymentWebhook
+      tags:
+        - Payments
+      security:
+        - HmacSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutWebhookEvent'
+            example:
+              payoutId: "pay_1704123456789"
+              status: "settled"
+              amountLKR: 5000
+              gigId: "g2"
+      responses:
+        '204':
+          description: Webhook successfully processed
+        '400':
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Invalid webhook payload structure"
+        '401':
+          description: Invalid or missing signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Invalid signature"
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    Gig:
+      type: object
+      required:
+        - id
+        - title
+        - payoutLKR
+        - skills
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the gig
+          example: "g1"
+        title:
+          type: string
+          description: Brief title describing the gig
+          example: "Figma landing revamp"
+        payoutLKR:
+          type: integer
+          minimum: 0
+          description: Payout amount in Sri Lankan Rupees
+          example: 3000
+        skills:
+          type: array
+          items:
+            type: string
+          description: Required skills for the gig
+          example: ["Figma", "UI/UX"]
+
+    PayoutWebhookEvent:
+      type: object
+      required:
+        - payoutId
+        - status
+        - amountLKR
+        - gigId
+      properties:
+        payoutId:
+          type: string
+          description: Unique identifier for the payout transaction
+          example: "pay_1704123456789"
+        status:
+          type: string
+          enum: [settled, failed]
+          description: Final status of the payment
+          example: "settled"
+        amountLKR:
+          type: integer
+          minimum: 0
+          description: Payment amount in Sri Lankan Rupees
+          example: 5000
+        gigId:
+          type: string
+          description: Associated gig identifier
+          example: "g2"
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: "Invalid request payload"
+
+  responses:
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal server error"
+
+  securitySchemes:
+    HmacSignature:
+      type: apiKey
+      in: header
+      name: x-paydpi-signature
+      description: |
+        HMAC-SHA256 signature of the request body using the shared secret.
+        Format: hex-encoded string (64 characters).
+        
+        Example calculation:
+        ```
+        const crypto = require('crypto');
+        const signature = crypto
+          .createHmac('sha256', secret)
+          .update(JSON.stringify(requestBody))
+          .digest('hex');
+        ```
+
+tags:
+  - name: Gigs
+    description: Operations related to gig management
+  - name: Payments
+    description: Payment processing and webhook handling

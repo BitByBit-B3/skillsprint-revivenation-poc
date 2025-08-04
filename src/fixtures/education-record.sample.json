@@ -1,0 +1,11 @@
+{
+  "fullName": "Demo User",
+  "qualifications": [
+    {
+      "institution": "ABC University",
+      "program": "BSc IT",
+      "year": 2024,
+      "skills": ["React", "Node.js"]
+    }
+  ]
+}

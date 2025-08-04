@@ -1,0 +1,794 @@
+{
+  "info": {
+    "name": "SkillSprint Complete API Collection",
+    "description": "Complete end-to-end testing collection for SkillSprint API - Ready to import and run",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "TXN_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "SESSION_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "PAYOUT_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "PAYDPI_SECRET",
+      "value": "supersecret",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Server is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.ok).to.be.true;",
+                  "    pm.expect(response.time).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the API server is running and healthy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Authentication Flow",
+      "item": [
+        {
+          "name": "1. Login with Phone (OTP Request)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('OTP request successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.txnId).to.exist;",
+                  "    pm.expect(response.channel).to.eql('otp');",
+                  "    pm.expect(response.message).to.include('OTP sent');",
+                  "    ",
+                  "    // Store transaction ID for next request",
+                  "    pm.collectionVariables.set('TXN_ID', response.txnId);",
+                  "    console.log('Transaction ID stored:', response.txnId);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+94771234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Initiate OTP login with phone number (MOSIP spec compliant)"
+          }
+        },
+        {
+          "name": "2. Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('OTP verification successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.idToken).to.exist;",
+                  "    pm.expect(response.claims).to.exist;",
+                  "    pm.expect(response.claims.sub).to.exist;",
+                  "    pm.expect(response.claims.name).to.exist;",
+                  "    pm.expect(response.sessionId).to.exist;",
+                  "    ",
+                  "    // Store session ID for authenticated requests",
+                  "    pm.collectionVariables.set('SESSION_ID', response.sessionId);",
+                  "    console.log('Session ID stored:', response.sessionId);",
+                  "    console.log('User claims:', JSON.stringify(response.claims, null, 2));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"txnId\": \"{{TXN_ID}}\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/verify",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "verify"]
+            },
+            "description": "Verify OTP and get session token (accepts any 6-digit code in mock mode)"
+          }
+        },
+        {
+          "name": "3. Get User Claims",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Claims retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.sub).to.exist;",
+                  "    pm.expect(response.name).to.exist;",
+                  "    pm.expect(response.email).to.exist;",
+                  "    console.log('Current user:', JSON.stringify(response, null, 2));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-session-id",
+                "value": "{{SESSION_ID}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/claims",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "claims"]
+            },
+            "description": "Retrieve current user claims using session ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📚 National Data Exchange",
+      "item": [
+        {
+          "name": "Fetch Education Record",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Education record fetched successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.fullName).to.exist;",
+                  "    pm.expect(response.qualifications).to.be.an('array');",
+                  "    pm.expect(response.qualifications.length).to.be.above(0);",
+                  "    ",
+                  "    const firstQual = response.qualifications[0];",
+                  "    pm.expect(firstQual.institution).to.exist;",
+                  "    pm.expect(firstQual.program).to.exist;",
+                  "    pm.expect(firstQual.year).to.exist;",
+                  "    pm.expect(firstQual.skills).to.be.an('array');",
+                  "    ",
+                  "    console.log('Education record:', JSON.stringify(response, null, 2));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"did:national:abc123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/nde/education",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "nde", "education"]
+            },
+            "description": "Fetch education record from National Data Exchange (mock or real API)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💼 Gigs Management",
+      "item": [
+        {
+          "name": "List Available Gigs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gigs loaded successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.gigs).to.be.an('array');",
+                  "    pm.expect(response.gigs.length).to.be.above(0);",
+                  "    ",
+                  "    const firstGig = response.gigs[0];",
+                  "    pm.expect(firstGig.id).to.exist;",
+                  "    pm.expect(firstGig.title).to.exist;",
+                  "    pm.expect(firstGig.payoutLKR).to.be.a('number');",
+                  "    pm.expect(firstGig.skills).to.be.an('array');",
+                  "    ",
+                  "    console.log('Available gigs:', JSON.stringify(response.gigs, null, 2));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/v1/gigs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "gigs"]
+            },
+            "description": "Get list of available micro-gigs with payouts and skill requirements"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 Payment Processing",
+      "item": [
+        {
+          "name": "1. Initiate Payout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Payout initiated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.payoutId).to.exist;",
+                  "    pm.expect(response.status).to.eql('initiated');",
+                  "    ",
+                  "    // Store payout ID for status checking",
+                  "    pm.collectionVariables.set('PAYOUT_ID', response.payoutId);",
+                  "    console.log('Payout initiated:', response.payoutId);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gigId\": \"g2\",\n  \"amountLKR\": 5000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/paydpi",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "paydpi"]
+            },
+            "description": "Initiate payout for accepted gig (simulates 3-second webhook in mock mode)"
+          }
+        },
+        {
+          "name": "2. Check Payout Status (Immediate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Payout status retrieved', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.payoutId).to.exist;",
+                  "    pm.expect(response.status).to.exist;",
+                  "    pm.expect(response.timestamp).to.exist;",
+                  "    ",
+                  "    console.log('Payout status:', response.status);",
+                  "    console.log('Timestamp:', response.timestamp);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/paydpi/status?payoutId={{PAYOUT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "paydpi", "status"],
+              "query": [
+                {
+                  "key": "payoutId",
+                  "value": "{{PAYOUT_ID}}"
+                }
+              ]
+            },
+            "description": "Check status immediately after initiation (should be 'initiated')"
+          }
+        },
+        {
+          "name": "3. Check Payout Status (After 4 seconds)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Wait 4 seconds to allow webhook to complete",
+                  "console.log('Waiting 4 seconds for webhook to process...');",
+                  "setTimeout(function(){}, 4000);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Payout completed via webhook', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.payoutId).to.exist;",
+                  "    pm.expect(response.status).to.eql('settled');",
+                  "    pm.expect(response.timestamp).to.exist;",
+                  "    ",
+                  "    console.log('✅ Payment completed successfully!');",
+                  "    console.log('Final status:', response.status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/paydpi/status?payoutId={{PAYOUT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "paydpi", "status"],
+              "query": [
+                {
+                  "key": "payoutId",
+                  "value": "{{PAYOUT_ID}}"
+                }
+              ]
+            },
+            "description": "Check status after webhook processing (should be 'settled')"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔗 Webhook Testing",
+      "item": [
+        {
+          "name": "1. Test Valid Webhook",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate HMAC signature for webhook payload",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "const payload = {",
+                  "    \"payoutId\": \"pay_test_webhook\",",
+                  "    \"status\": \"settled\",",
+                  "    \"amountLKR\": 3000,",
+                  "    \"gigId\": \"g1\"",
+                  "};",
+                  "",
+                  "const payloadString = JSON.stringify(payload);",
+                  "const secret = pm.collectionVariables.get('PAYDPI_SECRET');",
+                  "const signature = CryptoJS.HmacSHA256(payloadString, secret).toString();",
+                  "",
+                  "pm.collectionVariables.set('WEBHOOK_SIGNATURE', signature);",
+                  "pm.collectionVariables.set('WEBHOOK_PAYLOAD', payloadString);",
+                  "",
+                  "console.log('Generated signature:', signature);",
+                  "console.log('Payload:', payloadString);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Valid webhook processed successfully', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "    console.log('✅ Webhook processed successfully');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-paydpi-signature",
+                "value": "{{WEBHOOK_SIGNATURE}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{WEBHOOK_PAYLOAD}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/v1/payouts/webhook",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "payouts", "webhook"]
+            },
+            "description": "Test webhook with valid HMAC signature (should return 204)"
+          }
+        },
+        {
+          "name": "2. Test Invalid Signature",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid signature rejected', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.error).to.include('Invalid signature');",
+                  "    console.log('✅ Invalid signature properly rejected');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-paydpi-signature",
+                "value": "invalid_signature_should_fail"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payoutId\": \"pay_test_invalid\",\n  \"status\": \"settled\",\n  \"amountLKR\": 3000,\n  \"gigId\": \"g1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/v1/payouts/webhook",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "payouts", "webhook"]
+            },
+            "description": "Test webhook with invalid signature (should return 401)"
+          }
+        },
+        {
+          "name": "3. Test Missing Signature",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Missing signature rejected', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.error).to.include('Missing signature');",
+                  "    console.log('✅ Missing signature properly rejected');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payoutId\": \"pay_test_no_sig\",\n  \"status\": \"settled\",\n  \"amountLKR\": 3000,\n  \"gigId\": \"g1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/v1/payouts/webhook",
+              "host": ["{{BASE_URL}}"],
+              "path": ["v1", "payouts", "webhook"]
+            },
+            "description": "Test webhook without signature header (should return 401)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 End-to-End Test Scenarios",
+      "item": [
+        {
+          "name": "Complete User Journey",
+          "item": [
+            {
+              "name": "E2E: Health Check",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/health",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["health"]
+                }
+              }
+            },
+            {
+              "name": "E2E: Sign In",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "pm.collectionVariables.set('E2E_TXN_ID', response.txnId);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+94777777777\"\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/login",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              }
+            },
+            {
+              "name": "E2E: Verify OTP",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "pm.collectionVariables.set('E2E_SESSION_ID', response.sessionId);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"txnId\": \"{{E2E_TXN_ID}}\",\n  \"otp\": \"111111\"\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/verify",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "auth", "verify"]
+                }
+              }
+            },
+            {
+              "name": "E2E: Fetch Education",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"subject\": \"did:national:abc123\"\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/nde/education",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "nde", "education"]
+                }
+              }
+            },
+            {
+              "name": "E2E: List Gigs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/v1/gigs",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["v1", "gigs"]
+                }
+              }
+            },
+            {
+              "name": "E2E: Accept Gig & Pay",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "pm.collectionVariables.set('E2E_PAYOUT_ID', response.payoutId);",
+                      "console.log('🎉 End-to-end test completed successfully!');",
+                      "console.log('User signed in, education verified, gig accepted, payment initiated.');",
+                      "console.log('In 3 seconds, payment will be marked as settled via webhook.');"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"gigId\": \"g1\",\n  \"amountLKR\": 3000\n}"
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/paydpi",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "paydpi"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "console.log('🚀 Making request to:', pm.request.url.toString());",
+          "",
+          "// Set base URL if not already set",
+          "if (!pm.collectionVariables.get('BASE_URL')) {",
+          "    pm.collectionVariables.set('BASE_URL', 'http://localhost:3001');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test('Response time is reasonable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "// Log response for debugging",
+          "if (pm.response.code >= 400) {",
+          "    console.log('❌ Error Response:', pm.response.json());",
+          "} else {",
+          "    console.log('✅ Success:', pm.response.code, pm.response.status);",
+          "}"
+        ]
+      }
+    }
+  ]
+}
