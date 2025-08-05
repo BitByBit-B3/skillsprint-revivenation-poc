@@ -19,8 +19,8 @@ export function GigCard({ gig, onAccept, paymentStatus = 'idle', disabled = fals
     <div className="card-hover">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">{gig.title}</h3>
-          <div className="flex flex-wrap gap-2 mb-3">
+          <h3 className="text-base font-medium text-foreground mb-2">{gig.title}</h3>
+          <div className="flex flex-wrap gap-1 mb-3">
             {gig.skills.map((skill) => (
               <Badge key={skill} variant="secondary">
                 {skill}
@@ -29,7 +29,7 @@ export function GigCard({ gig, onAccept, paymentStatus = 'idle', disabled = fals
           </div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-accent-emerald">
+          <div className="text-lg font-medium text-accent-emerald">
             LKR {gig.payoutLKR.toLocaleString()}
           </div>
         </div>

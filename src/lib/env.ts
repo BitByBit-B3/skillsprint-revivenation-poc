@@ -21,8 +21,8 @@ export const env = {
   PAYDPI_SECRET: process.env.PAYDPI_SECRET || 'supersecret',
   
   // Web / API
-  PORT: parseInt(process.env.PORT || '3001'),
-  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL || 'http://localhost:3001',
+  PORT: parseInt(process.env.PORT || '3003'),
+  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL || 'http://localhost:3003',
   WEB_ORIGIN: process.env.WEB_ORIGIN || 'http://localhost:3000'
 };
 

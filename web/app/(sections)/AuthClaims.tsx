@@ -69,20 +69,20 @@ export function AuthClaimsSection({ onAuthSuccess, user }: AuthClaimsProps) {
   if (user) {
     return (
       <div className="card">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Government Sign-In</h2>
+        <h2 className="text-lg font-medium text-foreground mb-4">Government Sign-In</h2>
         <StatusChip status="success" data-test="auth-status" />
-        <div className="mt-4 p-4 bg-background border border-border rounded-xl space-y-2">
-          <div className="text-sm">
+        <div className="mt-4 space-y-2 text-sm">
+          <div>
             <span className="text-foreground-secondary">Name: </span>
-            <span className="text-foreground font-medium">{user.name}</span>
+            <span className="text-foreground">{user.name}</span>
           </div>
-          <div className="text-sm">
+          <div>
             <span className="text-foreground-secondary">Email: </span>
-            <span className="text-foreground font-medium">{user.email}</span>
+            <span className="text-foreground">{user.email}</span>
           </div>
-          <div className="text-sm">
+          <div>
             <span className="text-foreground-secondary">ID: </span>
-            <span className="text-foreground font-medium font-mono">{user.sub}</span>
+            <span className="text-foreground font-mono">{user.sub}</span>
           </div>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function AuthClaimsSection({ onAuthSuccess, user }: AuthClaimsProps) {
 
   return (
     <div className="card">
-      <h2 className="text-xl font-semibold text-foreground mb-4">Government Sign-In</h2>
+      <h2 className="text-lg font-medium text-foreground mb-4">Government Sign-In</h2>
       
       <StatusChip 
         status={status === 'loading' ? 'loading' : status === 'error' ? 'error' : 'idle'} 

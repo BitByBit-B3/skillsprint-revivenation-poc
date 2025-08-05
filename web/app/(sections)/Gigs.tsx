@@ -124,7 +124,7 @@ export function GigsSection({ user }: GigsProps) {
   if (loading) {
     return (
       <div className="card">
-        <h2 className="text-xl font-semibold text-foreground mb-4">Gigs & Payment</h2>
+        <h2 className="text-lg font-medium text-foreground mb-4">Gigs & Payment</h2>
         <div className="text-foreground-secondary">Loading gigs...</div>
       </div>
     );
@@ -132,16 +132,16 @@ export function GigsSection({ user }: GigsProps) {
 
   return (
     <div className="card">
-      <h2 className="text-xl font-semibold text-foreground mb-4">Gigs & Payment</h2>
+      <h2 className="text-lg font-medium text-foreground mb-4">Gigs & Payment</h2>
       
       {error && (
-        <div className="text-sm text-error bg-error/10 p-3 rounded-xl mb-4">
+        <div className="text-sm text-error bg-error/10 p-3 rounded-lg mb-4">
           {error}
         </div>
       )}
 
       {!user && (
-        <div className="text-sm text-foreground-secondary bg-border/20 p-3 rounded-xl mb-4">
+        <div className="text-sm text-foreground-secondary bg-border/20 p-3 rounded-lg mb-4">
           Please sign in to view and accept gigs.
         </div>
       )}

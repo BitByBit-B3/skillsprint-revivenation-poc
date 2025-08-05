@@ -37,7 +37,7 @@ export function EducationSection({ user }: EducationProps) {
 
   return (
     <div className="card">
-      <h2 className="text-xl font-semibold text-foreground mb-4">National Data Exchange</h2>
+      <h2 className="text-lg font-medium text-foreground mb-4">National Data Exchange</h2>
       
       <StatusChip status={status} data-test="education-status" />
 
@@ -57,56 +57,47 @@ export function EducationSection({ user }: EducationProps) {
         </button>
 
         {error && (
-          <div className="text-sm text-error bg-error/10 p-3 rounded-xl">
+          <div className="text-sm text-error bg-error/10 p-3 rounded-lg">
             {error}
           </div>
         )}
 
         {educationRecord && (
           <div className="space-y-4">
-            <div className="p-4 bg-background border border-border rounded-xl">
-              <h3 className="font-semibold text-foreground mb-3">Education Record</h3>
-              
-              <div className="space-y-3">
-                <div className="text-sm">
-                  <span className="text-foreground-secondary">Full Name: </span>
-                  <span className="text-foreground font-medium">{educationRecord.fullName}</span>
-                </div>
-                
-                {educationRecord.qualifications.map((qual, idx) => (
-                  <div key={idx} className="border-l-2 border-accent-emerald pl-4 space-y-2">
-                    <div className="text-sm">
-                      <span className="text-foreground-secondary">Institution: </span>
-                      <span className="text-foreground font-medium">{qual.institution}</span>
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-foreground-secondary">Program: </span>
-                      <span className="text-foreground font-medium">{qual.program}</span>
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-foreground-secondary">Year: </span>
-                      <span className="text-foreground font-medium">{qual.year}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {qual.skills.map((skill) => (
-                        <Badge key={skill} variant="secondary">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+            <div className="space-y-3">
+              <div className="text-sm">
+                <span className="text-foreground-secondary">Full Name: </span>
+                <span className="text-foreground">{educationRecord.fullName}</span>
               </div>
+              
+              {educationRecord.qualifications.map((qual, idx) => (
+                <div key={idx} className="space-y-2">
+                  <div className="text-sm">
+                    <span className="text-foreground-secondary">Institution: </span>
+                    <span className="text-foreground">{qual.institution}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-foreground-secondary">Program: </span>
+                    <span className="text-foreground">{qual.program}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-foreground-secondary">Year: </span>
+                    <span className="text-foreground">{qual.year}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {qual.skills.map((skill) => (
+                      <Badge key={skill} variant="secondary">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {firstSkill && (
-              <div className="p-3 bg-accent-emerald/10 border border-accent-emerald/20 rounded-xl">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-accent-emerald rounded-full"></div>
-                  <span className="text-sm font-medium text-accent-emerald">
-                    Verified Skill: {firstSkill}
-                  </span>
-                </div>
+              <div className="text-sm text-accent-emerald">
+                ✓ Verified Skill: {firstSkill}
               </div>
             )}
           </div>

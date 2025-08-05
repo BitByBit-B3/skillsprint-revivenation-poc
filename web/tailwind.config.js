@@ -8,17 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#000000',
-        'background-secondary': '#0A0A0A',
+        background: '#121212',
+        'background-secondary': '#1a1a1a',
         foreground: '#FFFFFF',
-        'foreground-secondary': '#888888',
-        border: '#1A1A1A',
-        'border-secondary': '#2A2A2A',
+        'foreground-secondary': '#E4E4E4',
+        border: '#2c2c2c',
+        'border-secondary': '#292b2c',
         accent: {
-          emerald: '#00FF88',
-          cyan: '#00D4FF',
+          emerald: '#03DAC5',
+          cyan: '#BB86FC',
         },
-        success: '#00FF88',
+        success: '#03DAC5',
         warning: '#FFB800',
         error: '#FF4444',
       },

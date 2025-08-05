@@ -50,7 +50,7 @@ pnpm dev
 
 **That's it!** 🎉 
 
-- **API Server**: http://localhost:3001
+- **API Server**: http://localhost:3003
 - **Web Interface**: http://localhost:3000
 
 ## 📋 Hackathon Requirements

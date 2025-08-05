@@ -19,22 +19,22 @@
 
 @layer components {
   .card {
-    @apply bg-background-secondary border border-border rounded-2xl p-6 shadow-soft backdrop-blur-sm;
+    @apply bg-background-secondary/50 border border-border/50 rounded-xl p-6 backdrop-blur-sm;
   }
   
   .card-hover {
-    @apply card transition-all duration-300 hover:shadow-soft-lg hover:border-accent-emerald/30 hover:scale-[1.02];
+    @apply card transition-all duration-200 hover:border-accent-emerald/20;
   }
   
   .btn-primary {
-    @apply bg-gradient-to-r from-accent-emerald to-accent-cyan hover:from-accent-emerald/90 hover:to-accent-cyan/90 text-black font-semibold px-6 py-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl;
+    @apply bg-accent-emerald hover:bg-accent-emerald/90 text-background font-medium px-4 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .btn-secondary {
-    @apply bg-border hover:bg-border-secondary text-foreground font-medium px-4 py-2 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-border-secondary;
+    @apply bg-transparent border border-border text-foreground font-medium px-4 py-2 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:border-accent-emerald/30;
   }
   
   .input {
-    @apply bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:ring-2 focus:ring-accent-emerald focus:border-accent-emerald transition-all duration-300;
+    @apply bg-background border border-border rounded-lg px-3 py-2 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-accent-emerald transition-colors duration-200;
   }
 }
