@@ -7,7 +7,7 @@ import { errorHandler } from '../middleware/errorHandler';
 
 // Routes
 import { healthCheck } from './routes/health';
-import { login, verify, getClaims } from './routes/auth';
+import { login, verify, getClaims, health as authHealth } from './routes/auth';
 import { getEducationRecord } from './routes/nde';
 import { getGigs } from './routes/gigs';
 import { initiatePayout, getPayoutStatus } from './routes/paydpi';
@@ -47,6 +47,7 @@ app.get('/health', healthCheck);
 app.post('/api/auth/login', login);
 app.post('/api/auth/verify', verify);
 app.get('/api/auth/claims', getClaims);
+app.get('/api/auth/health', authHealth);
 
 // National Data Exchange
 app.post('/api/nde/education', getEducationRecord);

@@ -27,24 +27,30 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
   return response.json();
 }
 
-export async function loginWithPhone(phone: string): Promise<{ txnId: string; channel: string; message: string }> {
+export async function loginWithPhone(phone: string): Promise<{ txnId: string; requestId: string; response: { authStatus: string; message: string } }> {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   return apiRequest('/api/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ phone }),
+    body: JSON.stringify({ phone, requestId }),
   });
 }
 
-export async function verifyOtp(txnId: string, otp: string): Promise<{ idToken: string; claims: AuthClaims; sessionId: string }> {
+export async function verifyOtp(txnId: string, otp: string, requestId: string): Promise<{ txnId: string; requestId: string; response: { authStatus: string; authToken: string; message: string } }> {
   return apiRequest('/api/auth/verify', {
     method: 'POST',
-    body: JSON.stringify({ txnId, otp }),
+    body: JSON.stringify({ txnId, otp, requestId }),
   });
 }
 
-export async function getClaims(sessionId?: string): Promise<AuthClaims | null> {
-  return apiRequest('/api/auth/claims', {
-    headers: sessionId ? { 'x-session-id': sessionId } : {},
-  });
+export async function getClaims(sessionId?: string): Promise<{ response: { claims: AuthClaims; sessionId: string } } | null> {
+  try {
+    const result = await apiRequest<{ response: { claims: AuthClaims; sessionId: string } }>('/api/auth/claims', {
+      headers: sessionId ? { 'x-session-id': sessionId } : {},
+    });
+    return result;
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function fetchEducation(subject: string): Promise<EducationRecord> {

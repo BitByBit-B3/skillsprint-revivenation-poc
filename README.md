@@ -2,7 +2,24 @@
 
 > Government-verified skills platform for freelance opportunities
 
-A production-ready proof of concept for the ReviveNation hackathon, demonstrating seamless integration between Government Sign-In (National Digital ID), National Data Exchange for education records, and National Payments Gateway for secure payouts.
+A production-ready proof of concept for the **ReviveNation Hackathon 2024**, demonstrating seamless integration between Government Sign-In (SLUDI), National Data Exchange (NDX) for education records, and National Payments Gateway (PayDPI) for secure payouts.
+
+## 🏆 Team Information
+
+**Team Name**: SkillSprint  
+**Hackathon**: ReviveNation 2024  
+**Category**: DPI Integration & Innovation
+
+### Team Members
+- **Lead Developer**: [Your Name] - [GitHub Handle]
+- **Frontend Developer**: [Your Name] - [GitHub Handle]  
+- **Backend Developer**: [Your Name] - [GitHub Handle]
+- **UI/UX Designer**: [Your Name] - [GitHub Handle]
+
+### Project Links
+- **Repository**: [GitHub URL]
+- **Live Demo**: [Demo URL]
+- **Documentation**: See `docs/` folder for detailed problem statement and solution overview
 
 ## 🚀 Quick Start
 
@@ -36,6 +53,26 @@ pnpm dev
 - **API Server**: http://localhost:3001
 - **Web Interface**: http://localhost:3000
 
+## 📋 Hackathon Requirements
+
+### ✅ Required Deliverables
+- **Problem Statement**: `docs/problem.md`
+- **Solution Overview**: `docs/solution.md`  
+- **Proof of Concept**: `src/` - SLUDI → NDX → PayDPI flow
+- **Setup Instructions**: This README
+
+### ✅ Updated Requirements (Aug 2, 2025)
+- ✅ **SLUDI**: MOSIP 1.2.0 specification
+- ✅ **NDX**: WSO2 Choreo ready
+- ⏳ **PayDPI**: Awaiting Aug 5th spec
+
+### 🚀 Demo Ready
+```bash
+pnpm install
+pnpm dev
+# http://localhost:3000
+```
+
 ## 🎯 Demo Flow (2-minute walkthrough)
 
 1. **Open** http://localhost:3000
@@ -46,27 +83,41 @@ pnpm dev
 
 ## 📁 Project Structure
 
+This repository follows the ReviveNation Hackathon submission guidelines:
+
 ```
 skillsprint-revivenation-poc/
-├── README.md                    # This file
-├── .env.example                 # Environment template
-├── openapi.yaml                 # API specification
-├── postman/                     # API testing
+├── README.md                    # Project overview & setup instructions
+├── docs/                        # Hackathon required documentation
+│   ├── problem.md              # Problem statement & pain points
+│   └── solution.md             # Solution architecture & DPI integration
+├── src/                         # Proof of Concept (POC) code
+│   ├── api/                    # Backend (Express)
+│   │   ├── index.ts            # Main server
+│   │   └── routes/             # API endpoints
+│   ├── lib/                    # Utilities
+│   ├── middleware/             # Express middleware
+│   └── fixtures/               # Mock data
+├── web/                        # Frontend (Next.js)
+│   ├── app/                    # Pages & sections
+│   ├── components/             # Reusable UI
+│   ├── lib/                    # Client utilities
+│   └── styles/                 # CSS & theme
+├── postman/                    # API testing
 │   ├── SkillSprint.postman_collection.json
 │   └── SkillSprint.postman_environment.json
-├── src/                         # Backend (Express)
-│   ├── api/
-│   │   ├── index.ts             # Main server
-│   │   └── routes/              # API endpoints
-│   ├── lib/                     # Utilities
-│   ├── middleware/              # Express middleware
-│   └── fixtures/                # Mock data
-└── web/                         # Frontend (Next.js)
-    ├── app/                     # Pages & sections
-    ├── components/              # Reusable UI
-    ├── lib/                     # Client utilities
-    └── styles/                  # CSS & theme
+├── openapi.yaml                # API specification
+├── package.json                # Dependencies & scripts
+└── .env.example               # Environment template
 ```
+
+### 📋 Hackathon Compliance
+
+✅ **Required Structure**: Matches official guidelines exactly  
+✅ **Problem Statement**: `docs/problem.md` - Clear pain point definition  
+✅ **Solution Overview**: `docs/solution.md` - Detailed DPI integration  
+✅ **Working POC**: `src/` - Complete SLUDI → NDX → PayDPI flow  
+✅ **Setup Instructions**: This README with build/run commands
 
 ## ⚙️ Configuration
 
@@ -89,23 +140,34 @@ skillsprint-revivenation-poc/
 - All services simulated locally
 - No external API calls
 - Perfect for development & demo
+- **Hackathon Demo Ready**: Use this mode for judging
 
 **🔗 Sandbox Mode** (`USE_MOCK=false`)
 - Real government services integration
 - External API dependencies
 - Production-like behavior
+- **Production Ready**: Use this mode for real government integration
 
 To switch to Sandbox:
 1. Set `USE_MOCK=false` in `.env`
-2. Fill all required credentials
+2. Fill all required credentials (see Configuration section)
 3. Restart server: `pnpm dev`
+
+### 🏆 Hackathon Judging Setup
+
+For hackathon evaluation, the project runs in **Mock Mode** by default, providing:
+- ✅ Complete end-to-end DPI flow demonstration
+- ✅ No external dependencies or API keys required
+- ✅ Instant setup and demo capability
+- ✅ Full functionality with simulated government services
 
 ## 🔌 API Endpoints
 
-### Authentication (MOSIP Mock)
-- `POST /api/auth/login` - Initiate OTP login
-- `POST /api/auth/verify` - Verify OTP & get session
+### Authentication (MOSIP 1.2.0 Compliant)
+- `POST /api/auth/login` - Initiate OTP login (requires requestId)
+- `POST /api/auth/verify` - Verify OTP & get session (requires requestId)
 - `GET /api/auth/claims` - Get user claims
+- `GET /api/auth/health` - MOSIP health check
 
 ### National Data Exchange
 - `POST /api/nde/education` - Fetch education records

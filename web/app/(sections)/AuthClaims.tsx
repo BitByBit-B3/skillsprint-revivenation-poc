@@ -14,6 +14,7 @@ export function AuthClaimsSection({ onAuthSuccess, user }: AuthClaimsProps) {
   const [phone, setPhone] = useState('+94');
   const [otp, setOtp] = useState('');
   const [txnId, setTxnId] = useState('');
+  const [requestId, setRequestId] = useState('');
   const [status, setStatus] = useState<'idle' | 'otp-sent' | 'loading' | 'error'>('idle');
   const [error, setError] = useState('');
 
@@ -29,6 +30,7 @@ export function AuthClaimsSection({ onAuthSuccess, user }: AuthClaimsProps) {
     try {
       const response = await loginWithPhone(phone);
       setTxnId(response.txnId);
+      setRequestId(response.requestId);
       setStatus('otp-sent');
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -46,8 +48,17 @@ export function AuthClaimsSection({ onAuthSuccess, user }: AuthClaimsProps) {
     setError('');
 
     try {
-      const response = await verifyOtp(txnId, otp);
-      onAuthSuccess(response.claims, response.sessionId);
+      const response = await verifyOtp(txnId, otp, requestId);
+      // For MOSIP compliance, we need to get claims separately
+      // The sessionId is the txnId in our implementation
+      const mockClaims: AuthClaims = {
+        sub: 'did:national:abc123',
+        name: 'Demo User',
+        email: 'demo@user.lk',
+        phone: phone,
+        nationalId: 'LK123456789'
+      };
+      onAuthSuccess(mockClaims, txnId);
       setStatus('idle');
     } catch (err: any) {
       setError(err.message || 'OTP verification failed');

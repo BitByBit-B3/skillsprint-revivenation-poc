@@ -2,6 +2,8 @@ export interface AuthClaims {
   sub: string;
   name?: string;
   email?: string;
+  phone?: string;
+  nationalId?: string;
 }
 
 export interface EducationRecord {

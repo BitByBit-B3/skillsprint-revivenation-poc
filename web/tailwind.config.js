@@ -8,19 +8,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#0A0A0A',
-        'background-secondary': '#0B0B10',
-        foreground: '#E5E5E5',
-        'foreground-secondary': '#A3A3A3',
-        border: '#262626',
-        'border-secondary': '#404040',
+        background: '#000000',
+        'background-secondary': '#0A0A0A',
+        foreground: '#FFFFFF',
+        'foreground-secondary': '#888888',
+        border: '#1A1A1A',
+        'border-secondary': '#2A2A2A',
         accent: {
-          emerald: '#10B981',
-          cyan: '#06B6D4',
+          emerald: '#00FF88',
+          cyan: '#00D4FF',
         },
-        success: '#10B981',
-        warning: '#F59E0B',
-        error: '#EF4444',
+        success: '#00FF88',
+        warning: '#FFB800',
+        error: '#FF4444',
       },
       borderRadius: {
         '2xl': '1rem',
