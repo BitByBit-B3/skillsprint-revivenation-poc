@@ -17,8 +17,7 @@ A production-ready proof of concept for the **ReviveNation Hackathon 2024**, dem
 - **UI/UX Designer**: [Update with actual name] - [@github-handle]
 
 ### Project Links
-- **Repository**: https://github.com/[your-username]/skillsprint-revivenation-poc
-- **Live Demo**: [Update with deployment URL]
+- **Repository**: https://github.com/BitByBit-B3/skillsprint-revivenation-poc
 - **Documentation**: See `docs/` folder for detailed problem statement and solution overview
 
 ## 🚀 Quick Start
