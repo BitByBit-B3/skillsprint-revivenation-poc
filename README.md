@@ -11,14 +11,14 @@ A production-ready proof of concept for the **ReviveNation Hackathon 2024**, dem
 **Category**: DPI Integration & Innovation
 
 ### Team Members
-- **Lead Developer**: [Your Name] - [GitHub Handle]
-- **Frontend Developer**: [Your Name] - [GitHub Handle]  
-- **Backend Developer**: [Your Name] - [GitHub Handle]
-- **UI/UX Designer**: [Your Name] - [GitHub Handle]
+- **Lead Developer**: [Update with actual name] - [@github-handle]
+- **Frontend Developer**: [Update with actual name] - [@github-handle]  
+- **Backend Developer**: [Update with actual name] - [@github-handle]
+- **UI/UX Designer**: [Update with actual name] - [@github-handle]
 
 ### Project Links
-- **Repository**: [GitHub URL]
-- **Live Demo**: [Demo URL]
+- **Repository**: https://github.com/[your-username]/skillsprint-revivenation-poc
+- **Live Demo**: [Update with deployment URL]
 - **Documentation**: See `docs/` folder for detailed problem statement and solution overview
 
 ## 🚀 Quick Start
