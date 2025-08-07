@@ -10,6 +10,7 @@ import { getClaims } from '@/lib/api';
 
 export default function HomePage() {
   const [user, setUser] = useState<AuthClaims | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sessionId, setSessionId] = useState<string>('');
   const [loading, setLoading] = useState(true);
 

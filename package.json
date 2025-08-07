@@ -9,7 +9,7 @@
     "dev": "concurrently \"pnpm dev:api\" \"pnpm dev:web\"",
     "build": "tsc && cd web && npm run build",
     "start": "node dist/api/index.js",
-    "test:webhook": "node -e \"const crypto = require('crypto'); const secret = 'supersecret'; const payload = JSON.stringify({payoutId:'pay_test',status:'settled',amountLKR:5000,gigId:'g2'}); const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex'); console.log('curl -X POST http://localhost:3001/v1/payouts/webhook -H \\\"Content-Type: application/json\\\" -H \\\"x-paydpi-signature: ' + signature + '\\\" -d \\'' + payload + '\\'');\"",
+    "test:webhook": "node -e \"const crypto = require('crypto'); const secret = 'supersecret'; const payload = JSON.stringify({payoutId:'pay_test',status:'settled',amountLKR:5000,gigId:'g2'}); const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex'); console.log('curl -X POST http://localhost:3003/v1/payouts/webhook -H \\\"Content-Type: application/json\\\" -H \\\"x-paydpi-signature: ' + signature + '\\\" -d \\'' + payload + '\\'');\"",
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit"
   },

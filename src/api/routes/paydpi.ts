@@ -74,7 +74,7 @@ export async function initiatePayout(req: Request, res: Response): Promise<void>
       throw new Error(`PayDPI API error: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data = await response.json() as { payoutId: string; status: PayoutStatus };
     
     // Store the payout status
     payoutStore.set(data.payoutId, data.status);

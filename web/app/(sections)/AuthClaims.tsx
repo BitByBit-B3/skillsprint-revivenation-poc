@@ -48,7 +48,7 @@ export function AuthClaimsSection({ onAuthSuccess, user }: AuthClaimsProps) {
     setError('');
 
     try {
-      const response = await verifyOtp(txnId, otp, requestId);
+      await verifyOtp(txnId, otp, requestId);
       // For MOSIP compliance, we need to get claims separately
       // The sessionId is the txnId in our implementation
       const mockClaims: AuthClaims = {
